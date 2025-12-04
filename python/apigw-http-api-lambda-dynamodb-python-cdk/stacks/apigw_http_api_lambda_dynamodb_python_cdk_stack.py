@@ -93,6 +93,7 @@ class ApigwHttpApiLambdaDynamodbPythonCdkStack(Stack):
             partition_key=dynamodb_.Attribute(
                 name="id", type=dynamodb_.AttributeType.STRING
             ),
+            billing_mode=dynamodb_.BillingMode.PAY_PER_REQUEST,
             point_in_time_recovery=True,
             contributor_insights_enabled=True,
         )
