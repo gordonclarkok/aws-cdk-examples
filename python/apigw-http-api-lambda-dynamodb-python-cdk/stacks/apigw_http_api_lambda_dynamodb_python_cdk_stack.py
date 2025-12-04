@@ -127,11 +127,15 @@ class ApigwHttpApiLambdaDynamodbPythonCdkStack(Stack):
             removal_policy=RemovalPolicy.DESTROY,
         )
 
-        # Create API Gateway with throttling configuration
-        apigw_.LambdaRestApi(
+        # Create API Gateway with throttling and API key requirement
+        api = apigw_.LambdaRestApi(
             self,
             "Endpoint",
             handler=api_hanlder,
+            api_key_source_type=apigw_.ApiKeySourceType.HEADER,
+            default_method_options=apigw_.MethodOptions(
+                api_key_required=True
+            ),
             deploy_options=apigw_.StageOptions(
                 throttling_rate_limit=1000,
                 throttling_burst_limit=2000,
@@ -150,3 +154,31 @@ class ApigwHttpApiLambdaDynamodbPythonCdkStack(Stack):
                 ),
             ),
         )
+
+        # Create usage plan for standard tier
+        usage_plan = apigw_.UsagePlan(
+            self,
+            "StandardUsagePlan",
+            name="StandardUsagePlan",
+            throttle=apigw_.ThrottleSettings(
+                rate_limit=100,
+                burst_limit=200
+            ),
+            quota=apigw_.QuotaSettings(
+                limit=10000,
+                period=apigw_.Period.DAY
+            )
+        )
+
+        usage_plan.add_api_stage(
+            stage=api.deployment_stage
+        )
+
+        # Create API key for standard tier
+        api_key = apigw_.ApiKey(
+            self,
+            "StandardApiKey",
+            api_key_name="StandardApiKey"
+        )
+
+        usage_plan.add_api_key(api_key)
