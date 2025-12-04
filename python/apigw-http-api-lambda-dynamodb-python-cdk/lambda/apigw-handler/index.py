@@ -1,6 +1,12 @@
 # Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 # SPDX-License-Identifier: MIT-0
 
+from aws_xray_sdk.core import xray_recorder
+from aws_xray_sdk.core import patch_all
+
+# Patch all supported libraries (boto3, requests, etc.)
+patch_all()
+
 import boto3
 import os
 import json
