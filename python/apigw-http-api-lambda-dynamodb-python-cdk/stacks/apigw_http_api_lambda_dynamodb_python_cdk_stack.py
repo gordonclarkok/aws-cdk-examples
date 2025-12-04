@@ -113,6 +113,7 @@ class ApigwHttpApiLambdaDynamodbPythonCdkStack(Stack):
             timeout=Duration.minutes(5),
             tracing=lambda_.Tracing.ACTIVE,
             log_retention=logs.RetentionDays.ONE_YEAR,
+            reserved_concurrent_executions=100,
         )
 
         # grant permission to lambda to write to demo table
